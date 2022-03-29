@@ -83,6 +83,47 @@ class Queuer<T> {
     return 2 * key + 2;
   }
 
+  private compare(lhs: T, rhs: T): boolean {
+    // Compare using priority
+    if (this.config.prioritized)
+      // max heap or min heap
+      return this.config.maxHeap
+        ? this.getPriority(lhs) > this.getPriority(rhs)
+        : this.getPriority(lhs) < this.getPriority(rhs)
+
+    // Compare using comparator
+    else if (typeof this.config.comparator === 'function')
+      return this.config.comparator?.(lhs, rhs);
+
+    else
+      throw Error("Invalid Comparator or priority");
+  }
+
+  // iterative
+  private iterHeapify(arr: T[]) {
+
+  }
+
+  // Recursive
+  private recHeapify(arr: T[], root: number) {
+    const left = this.left(root);
+    const right = this.right(root);
+    let top = root;
+
+    if (left <= this.size && this.compare(arr[left], arr[top]))
+      top = left;
+
+    if (right <= this.size && this.compare(arr[right], arr[top]))
+      top = right
+
+    if (top !== root) {
+      this.swap(arr, root, top);
+      this.recHeapify(arr, top);
+    }
+  }
+
+
+
   queuingWithPriority(arr: T[]) {
 
   }
