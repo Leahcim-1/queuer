@@ -1,29 +1,34 @@
 import { Comparator, QueuerConfig } from './types'
 
-class Queuer<T> {
-  // Local variable
-  config: QueuerConfig<T> = {
+function defaultConfig<T>(): QueuerConfig<T> {
+  return {
     comparator: (a, b) => a > b,
     maxHeap: true,
     prioritized: false,
     capacity: Infinity,
     key: "priority",
-  };
+  }
+}
+
+class Queuer<T> {
+  // Local variable
+  config: QueuerConfig<T> = defaultConfig();
   heap: {
     key: number,
     val: T,
   }[] = [];
   size: number = 0;
 
-  constructor(config: QueuerConfig<T>) {
+  constructor(cfg: QueuerConfig<T>) {
+    const config = Object.assign({}, defaultConfig(), cfg);
+
     if (!config.prioritized && !config.comparator)
       throw Error("You must prioritize the element or give a comparator");
 
-    if (config.prioritized && (
-        !config.key ||
-        !config.priorityGetter ||
-        typeof config.priorityGetter != 'function'
-      )
+    if (config.prioritized &&
+        config.key &&
+        config.priorityGetter &&
+        typeof config.priorityGetter !== 'function'
     )
       throw Error('You have to provide key or keyGetter');
 
