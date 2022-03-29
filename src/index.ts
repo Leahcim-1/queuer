@@ -36,9 +36,19 @@ class Queuer<T> {
   }
 
   queuing(arr: T[]) {
-    return this.config.prioritized
-      ? this.queuingWithPriority(arr)
-      : this.queuingWithComparator(arr);
+    this.size = arr.length;
+
+    // Build heap
+    for (let i = Math.floor(this.size / 2); i >= 0; i--) {
+      this.recHeapify(arr, this.size, i);
+    }
+
+    // Sorting
+    for (let i = this.size - 1; i > 0; i--) {
+      this.swap(arr, 0, i);
+      this.recHeapify(arr, i, 0);
+    }
+
   }
 
   private getPriority(val: T): number {
@@ -105,32 +115,25 @@ class Queuer<T> {
   }
 
   // Recursive
-  private recHeapify(arr: T[], root: number) {
+  private recHeapify(arr: T[], size: number, root: number) {
     const left = this.left(root);
     const right = this.right(root);
     let top = root;
 
-    if (left <= this.size && this.compare(arr[left], arr[top]))
+    if (left < size && this.compare(arr[left], arr[top]))
       top = left;
 
-    if (right <= this.size && this.compare(arr[right], arr[top]))
+    if (right < size && this.compare(arr[right], arr[top]))
       top = right
 
     if (top !== root) {
       this.swap(arr, root, top);
-      this.recHeapify(arr, top);
+      this.recHeapify(arr, size, top);
     }
   }
 
 
 
-  queuingWithPriority(arr: T[]) {
-
-  }
-
-  queuingWithComparator(arr: T[]) {
-
-  }
 
 
 }
