@@ -39,10 +39,6 @@ class Queuer<T> {
   }
 
   heapify(arr: T[]) {
-    this.queuing(arr);
-  }
-
-  queuing(arr: T[]) {
     this.size = arr.length;
 
     // Build heap
@@ -55,8 +51,66 @@ class Queuer<T> {
       this.swap(arr, 0, i);
       this.recHeapify(arr, i, 0);
     }
-
   }
+
+  extract(arr: T[]): T {
+    if (this.size <= 0) throw Error('This array has size 0');
+    if (this.size === 1) return arr[0];
+
+    const root = arr[0];
+    arr[0] = <T>arr.pop();
+    this.size -= 1;
+    this.recHeapify(arr, this.size, 0);
+    return root;
+  }
+
+  insert(arr: T[], item: T): boolean {
+    // ? Whether to throw error if hit the capacity
+    if (this.size === this.config.capacity)
+      return false;
+
+    // Get the index of last element
+    let cur = this.size;
+    let parent = this.parent(cur);
+    arr.push(item);
+    this.size += 1;
+
+    // Fix the heap property
+    while (cur != 0 &&
+          this.compare(arr[cur], arr[parent])
+    ){
+      this.swap(arr, cur, parent);
+      cur = parent;
+    }
+
+    return true;
+  }
+
+  getMin(arr: T[]): T {
+    if (this.size <= 0) throw Error('This array has size 0');
+    return arr[0]
+  }
+
+  getMax(arr: T[]): T {
+    if (this.size <= 0) throw Error('This array has size 0');
+    return arr[0]
+  }
+
+  queuing(arr: T[]) {
+    return this.heapify(arr);
+  }
+
+  enqueue(arr: T[], item: T) {
+    return this.insert(arr, item);
+  }
+
+  dequeue(arr: T[]) {
+    return this.extract(arr);
+  }
+
+  /**
+   * Private Function Below
+   */
 
   private getPriority(val: T): number {
     const key = this.config.key || "";
