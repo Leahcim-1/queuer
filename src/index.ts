@@ -22,8 +22,11 @@ class Queuer<T> {
   constructor(cfg: QueuerConfig<T>) {
     const config = Object.assign({}, defaultConfig(), cfg);
 
-    if (!config.prioritized && !config.comparator)
-      throw Error("You must prioritize the element or give a comparator");
+    if (!config.prioritized &&
+        !config.comparator &&
+        typeof config.comparator !== 'function'
+    )
+      throw Error("You must prioritize the element or give valid a comparator");
 
     if (config.prioritized &&
         config.key &&
@@ -31,7 +34,6 @@ class Queuer<T> {
         typeof config.priorityGetter !== 'function'
     )
       throw Error('You have to provide key or keyGetter');
-
 
     this.config = config;
   }
@@ -103,8 +105,8 @@ class Queuer<T> {
     if (this.config.prioritized)
       // max heap or min heap
       return this.config.maxHeap
-        ? this.getPriority(lhs) > this.getPriority(rhs)
-        : this.getPriority(lhs) < this.getPriority(rhs)
+        ? this.getPriority(lhs) < this.getPriority(rhs)
+        : this.getPriority(lhs) > this.getPriority(rhs)
 
     // Compare using comparator
     else if (typeof this.config.comparator === 'function')

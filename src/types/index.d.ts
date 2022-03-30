@@ -4,7 +4,7 @@ declare interface Comparator<T> {
 
 declare interface QueuerConfig<T> {
   maxHeap: boolean,
-  prioritized: boolean,
+  prioritized?: boolean,
   key?: string,
   priorityGetter?: (a: T) => number,
   capacity?: number,
